@@ -11,3 +11,4 @@ requests
 yt-dlp 
 nltk
 openai
+huggingface_hub
