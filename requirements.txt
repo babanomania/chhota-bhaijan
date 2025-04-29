@@ -1,0 +1,13 @@
+torch
+transformers
+peft
+datasets
+sentence-transformers
+faiss-cpu
+streamlit
+wikipedia
+playwright
+requests
+yt-dlp 
+nltk
+openai

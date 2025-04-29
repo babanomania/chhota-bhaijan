@@ -1,0 +1,55 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# === Virtual Environment ===
+venv/
+env/
+.venv/
+
+# === Jupyter/IPython ===
+.ipynb_checkpoints
+
+# === Data & Checkpoints ===
+data/captions/
+data/*.vtt
+data/*.srt
+*.log
+*.tmp
+
+# === Model Output ===
+models/
+*.pt
+*.bin
+*.ckpt
+*.safetensors
+
+# === HuggingFace Cache ===
+~/.cache/huggingface/
+*.lock
+
+# === VS Code ===
+.vscode/
+.history/
+
+# === Streamlit Cache ===
+.streamlit/
+**/__pycache__/
+*.streamlit-*
+
+# === OS/System ===
+.DS_Store
+Thumbs.db
+
+# === Environment Files ===
+.env
+.env.*
+
+# === Dataset JSONLs (Optional) ===
+data/dialogues.jsonl
+data/interviews.jsonl
+data/movie_summaries.jsonl
+data/dataset.jsonl
