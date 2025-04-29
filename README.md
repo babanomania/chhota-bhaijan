@@ -5,7 +5,6 @@
 > Now imagine a chatbot that talks like that. 🎬
 
 **Chhota Bhaijaan** is a locally fine-tuned chatbot that speaks, answers, and vibes like **Salman Khan**.  
-
 Built on the incredibly small and fast [`TinyLlama-1.1B-Chat`](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat), this project merges **Bollywood masala with modern machine learning** — all with **low resource usage** and **high entertainment value**.
 
 > If you’ve ever wished to chat with *Prem*, *Chulbul Pandey*, or *Radhe*, this bot is the next best thing.
