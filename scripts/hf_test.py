@@ -1,31 +1,61 @@
-# app.py - Try Chhota Bhaijaan LoRA model
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
+import torch
 
-print("⏳ Loading Chhota Bhaijaan...")
+# Load base model
+base = AutoModelForCausalLM.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0", device_map="auto")
+tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
-# Load base model and tokenizer
-base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-adapter_id = "babanomania/chhota-bhaijaan-lora"
+# Load LoRA adapter
+model = PeftModel.from_pretrained(base, "babanomania/chhota-bhaijaan-lora")
 
-tokenizer = AutoTokenizer.from_pretrained(base_model_id)
-base_model = AutoModelForCausalLM.from_pretrained(base_model_id, device_map="auto")
-model = PeftModel.from_pretrained(base_model, adapter_id)
+# Move model to correct device
+device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+model = model.to(device)
 
-generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
-print("\n🤖 Ask Bhaijaan something (type 'exit' to quit):")
+def extract_salman_reply(generated_text: str) -> str:
+    """
+    Extract the first full response line after 'Salman:'.
+    Preserves the full line and handles multi-line generations safely.
+    """
+    lines = generated_text.strip().splitlines()
 
-while True:
-    prompt = input("\nYou: ")
-    if prompt.strip().lower() == "exit":
-        break
+    for line in lines:
+        line = line.strip()
+        if line.lower().startswith("salman:"):
+            # Return the whole line minus 'Salman:'
+            return line[len("Salman:"):].strip()
 
-    full_prompt = (
-        f"You are Salman Khan. Answer in first person. Keep it short, confident, and filmi.\n"
+    # Fallback if "Salman:" wasn't found
+    return lines[-1] if lines else "..."
+
+# Now you can manually call generate
+def chat_with_bhaijaan(prompt: str):
+    # Preprocess prompt
+    final_prompt = (
+        "You are Salman Khan. Reply in first person, confident and short.\n"
         f"Fan: {prompt.strip()}\nSalman:"
     )
 
-    result = generator(full_prompt, max_new_tokens=80, do_sample=True, temperature=0.9)
-    response = result[0]["generated_text"].split("Salman:")[-1].strip()
-    print("Bhaijaan:", response)
+    inputs = tokenizer(final_prompt, return_tensors="pt").to(device)
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=80,
+        do_sample=True,
+        temperature=0.9,
+        top_p=0.95,
+        repetition_penalty=1.2,
+        pad_token_id=tokenizer.eos_token_id
+    )
+
+    decoded = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return extract_salman_reply(decoded)
+
+# Example chat
+while True:
+    user_input = input("\nYou: ")
+    if user_input.strip().lower() == "exit":
+        break
+    reply = chat_with_bhaijaan(user_input)
+    print("Bhaijaan:", reply)
